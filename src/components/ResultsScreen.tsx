@@ -35,7 +35,6 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ data, onBack }) => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Voltar
           </button>
-          <h1 className="text-xl font-semibold">Resultado da Análise</h1>
           <button className="flex items-center hover:bg-energy-secondary/50 rounded-lg px-3 py-2 transition-colors">
             <Download className="w-5 h-5 mr-2" />
             Exportar
@@ -45,62 +44,22 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ data, onBack }) => {
         {/* Content */}
         <div className="bg-white rounded-b-xl shadow-lg p-6">
           {/* Document Info */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Dados do Documento</h2>
-            <p className="text-gray-600">
-              Município: {data.municipality} | Contrato: {data.contractNumber}
-            </p>
+          <div className="text-center text-sm text-gray-500 mb-8">
+            {data.municipality} | Contrato: {data.contractNumber}
           </div>
 
-          {/* Potential Savings */}
-          <div className="bg-green-50 border border-green-100 rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              Economia Total Potencial
-            </h3>
-            <p className="text-2xl font-bold text-green-700">
-              R$ {data.economiaPotencial.toFixed(2)}
-            </p>
-          </div>
-
-          {/* Tax Information */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* ICMS */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">ICMS</h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-gray-600">Base de Cálculo</p>
-                  <p className="text-xl font-semibold">R$ {data.icms.baseCalculo}</p>
-                </div>
-                <div className="bg-blue-50 p-3 rounded">
-                  <p className="text-gray-600">Valor do Imposto</p>
-                  <p className="text-xl font-semibold text-blue-700">
-                    R$ {data.icms.valorImposto}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* PIS */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">PIS</h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-gray-600">Base de Cálculo</p>
-                  <p className="text-xl font-semibold">R$ {data.pis.baseCalculo}</p>
-                </div>
-                <div className="bg-blue-50 p-3 rounded">
-                  <p className="text-gray-600">Valor do Imposto</p>
-                  <p className="text-xl font-semibold text-blue-700">
-                    R$ {data.pis.valorImposto}
-                  </p>
-                </div>
-              </div>
+          {/* Main Value */}
+          <div className="text-center mb-12">
+            <h2 className="text-xl text-gray-600 mb-4">Valor a ser recuperado</h2>
+            <div className="bg-green-50 inline-block rounded-xl px-8 py-6">
+              <p className="text-4xl font-bold text-green-700">
+                R$ {data.economiaPotencial.toFixed(2)}
+              </p>
             </div>
           </div>
 
           {/* Next Steps */}
-          <div className="mt-8">
+          <div className="mt-12 max-w-lg mx-auto">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Próximos Passos</h3>
             <ol className="space-y-3">
               <li className="flex items-center text-gray-700">
