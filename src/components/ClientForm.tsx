@@ -5,6 +5,13 @@ import LoadingScreen from './LoadingScreen';
 import ResultsScreen from './ResultsScreen';
 import type { FormData, FormErrors, ExtractedData } from '../types';
 
+interface ProgressData {
+  progress: number;
+  current_page?: number;
+  total_pages?: number;
+  status?: string;
+}
+
 const ClientForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     municipality: '',
@@ -15,6 +22,10 @@ const ClientForm: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
+  const [progressData, setProgressData] = useState<ProgressData>({
+    progress: 0,
+    status: "Iniciando processamento..."
+  });
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -52,6 +63,25 @@ const ClientForm: React.FC = () => {
     }
   };
 
+  const pollProgress = async (taskId: string): Promise<void> => {
+    try {
+      const response = await fetch(`http://localhost:8000/progress/${taskId}`);
+      if (!response.ok) {
+        throw new Error('Erro ao obter progresso');
+      }
+
+      const progress: ProgressData = await response.json();
+      setProgressData(progress);
+
+      // Continue polling if not complete
+      if (progress.progress < 100) {
+        setTimeout(() => pollProgress(taskId), 1000); // Poll every second
+      }
+    } catch (error) {
+      console.error('Erro ao obter progresso:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -60,6 +90,7 @@ const ClientForm: React.FC = () => {
     }
   
     setIsSubmitting(true);
+    setProgressData({ progress: 0, status: "Enviando arquivo..." });
   
     try {
       const payload = new FormData();
@@ -78,20 +109,32 @@ const ClientForm: React.FC = () => {
       }
   
       const result = await response.json();
+      
+      // Start polling for progress if task_id is returned
+      if (result.task_id) {
+        await pollProgress(result.task_id);
+      }
+
+      // Set final results
       setExtractedData({
         municipality: formData.municipality,
         contractNumber: formData.contractNumber,
-        icms: result.extracted_icms_data.icms,
+        icms: result.extracted_icms_data?.icms || {
+          baseCalculo: "0.00",
+          percentual: "0.00",
+          valorImposto: "0.00"
+        },
         pis: {
           baseCalculo: "23.87",
           percentual: "1.11",
           valorImposto: "0.26"
         },
-        economiaPotencial: 8.66,
-        historic: result.historic
+        economiaPotencial: result.economia_potencial || 8.66,
+        historic: result.historic || []
       });
     } catch (error) {
       console.error("Erro ao enviar:", error);
+      setProgressData({ progress: 0, status: "Erro no processamento" });
     } finally {
       setIsSubmitting(false);
     }
@@ -99,6 +142,7 @@ const ClientForm: React.FC = () => {
 
   const handleBack = () => {
     setExtractedData(null);
+    setProgressData({ progress: 0, status: "Iniciando processamento..." });
     setFormData({
       municipality: '',
       contractNumber: '',
@@ -112,7 +156,14 @@ const ClientForm: React.FC = () => {
 
   return (
     <>
-      {isSubmitting && <LoadingScreen />}
+      {isSubmitting && (
+        <LoadingScreen 
+          progress={progressData.progress}
+          currentPage={progressData.current_page}
+          totalPages={progressData.total_pages}
+          status={progressData.status}
+        />
+      )}
       <form onSubmit={handleSubmit} className="w-full max-w-lg">
         <FormField
           label="Nome do Município"
