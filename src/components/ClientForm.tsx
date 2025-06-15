@@ -130,6 +130,7 @@ const ClientForm: React.FC = () => {
           valorImposto: "0.26"
         },
         economiaPotencial: result.economia_potencial || 8.66,
+        valorCobrancaIndevida: result.valor_cobranca_indevida, // New field from backend
         historic: result.historic || []
       });
     } catch (error) {

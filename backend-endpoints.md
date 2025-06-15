@@ -24,7 +24,7 @@ Returns the current processing progress for a given task.
 
 ### POST /upload/
 
-Updated to return a task_id for progress tracking.
+Updated to return a task_id for progress tracking and valor_cobranca_indevida.
 
 **Updated Response Format:**
 ```json
@@ -39,6 +39,7 @@ Updated to return a task_id for progress tracking.
     }
   },
   "economia_potencial": 8.66,
+  "valor_cobranca_indevida": 150.75,
   "historic": [
     {
       "mes": "01",
@@ -49,6 +50,9 @@ Updated to return a task_id for progress tracking.
 }
 ```
 
+**Key Fields:**
+- `valor_cobranca_indevida` (number): The main value to be displayed on results screen - represents the improper billing amount that can be recovered
+
 ## Implementation Notes
 
 The frontend will:
@@ -56,9 +60,11 @@ The frontend will:
 2. Receive a `task_id` in response
 3. Poll `/progress/{task_id}` every second until progress reaches 100%
 4. Display real-time progress with a progress bar
+5. Show the `valor_cobranca_indevida` as the main result
 
 The backend should:
 1. Generate a unique task_id when processing starts
 2. Store progress information that can be retrieved via the task_id
 3. Update progress as pages are processed
-4. Return final results when processing is complete
+4. Calculate and return `valor_cobranca_indevida` as the primary result
+5. Return final results when processing is complete

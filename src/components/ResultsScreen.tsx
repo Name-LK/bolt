@@ -15,6 +15,7 @@ interface ExtractedData {
     valorImposto: string;
   };
   economiaPotencial: number;
+  valorCobrancaIndevida?: number; // New field from backend
 }
 
 interface ResultsScreenProps {
@@ -25,7 +26,7 @@ interface ResultsScreenProps {
 const ResultsScreen: React.FC<ResultsScreenProps> = ({ data, onBack }) => {
   return (
     <div className="min-h-screen bg-energy-background py-8 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="bg-energy-primary text-white p-4 rounded-t-xl flex items-center justify-between">
           <button 
@@ -42,50 +43,34 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ data, onBack }) => {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-b-xl shadow-lg p-6">
-          {/* Document Info */}
-          <div className="text-center text-sm text-gray-500 mb-8">
-            {data.municipality} | Contrato: {data.contractNumber}
+        <div className="bg-white rounded-b-xl shadow-lg p-8">
+          {/* Document Info - More discrete */}
+          <div className="text-center text-xs text-gray-400 mb-12 border-b border-gray-100 pb-4">
+            {data.municipality} • Contrato: {data.contractNumber}
           </div>
 
-          {/* Main Value */}
-          <div className="text-center mb-12">
-            <h2 className="text-xl text-gray-600 mb-4">Valor a ser recuperado</h2>
-            <div className="bg-green-50 inline-block rounded-xl px-8 py-6">
-              <p className="text-4xl font-bold text-green-700">
-                R$ {data.economiaPotencial.toFixed(2)}
+          {/* Main Value - Valor de Cobrança Indevida */}
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-8">
+              Valor de Cobrança Indevida
+            </h2>
+            <div className="bg-gradient-to-br from-red-50 to-red-100 inline-block rounded-2xl px-12 py-10 shadow-sm border border-red-200">
+              <p className="text-5xl font-bold text-red-700 mb-2">
+                R$ {(data.valorCobrancaIndevida || data.economiaPotencial || 0).toFixed(2)}
+              </p>
+              <p className="text-sm text-red-600 font-medium">
+                Valor identificado para recuperação
               </p>
             </div>
           </div>
 
-          {/* Next Steps */}
-          <div className="mt-12 max-w-lg mx-auto">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Próximos Passos</h3>
-            <ol className="space-y-3">
-              <li className="flex items-center text-gray-700">
-                <span className="bg-energy-primary/10 text-energy-primary w-6 h-6 rounded-full flex items-center justify-center mr-3">
-                  1
-                </span>
-                Consulte um especialista para avaliar suas possibilidades de economia.
-              </li>
-              <li className="flex items-center text-gray-700">
-                <span className="bg-energy-primary/10 text-energy-primary w-6 h-6 rounded-full flex items-center justify-center mr-3">
-                  2
-                </span>
-                Verifique a possibilidade de compensação de impostos já pagos.
-              </li>
-              <li className="flex items-center text-gray-700">
-                <span className="bg-energy-primary/10 text-energy-primary w-6 h-6 rounded-full flex items-center justify-center mr-3">
-                  3
-                </span>
-                Considere alternativas para redução do consumo energético.
-              </li>
-            </ol>
+          {/* Footer note */}
+          <div className="mt-16 text-center">
+            <p className="text-sm text-gray-500 bg-gray-50 rounded-lg p-4">
+              Este valor foi calculado automaticamente com base na análise do seu documento. 
+              Recomendamos consultar um especialista para validação.
+            </p>
           </div>
-
-          <p className="text-sm text-gray-500 mt-8 text-center">
-            Estas informações foram extraídas automaticamente e podem requerer verificação adicional.
-          </p>
         </div>
       </div>
     </div>

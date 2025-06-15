@@ -31,5 +31,6 @@ export interface ExtractedData {
     valorImposto: string;
   };
   economiaPotencial: number;
+  valorCobrancaIndevida?: number; // New field from backend
   historic: HistoricItem[];
 }
